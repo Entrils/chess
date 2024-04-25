@@ -12,9 +12,32 @@ export class King extends Figure{
     }
 
     canMove(target: Cell): boolean {
-        if(!super.canMove(target)){
+            if (!super.canMove(target)) {
+              return false;
+            }
+            if (
+              Math.abs(target.x - this.cell.x) > 1 ||
+              Math.abs(target.y - this.cell.y) > 1
+            ) {
+              return false;
+            }
+        
+            if (this.cell.isEmptyVertical(target)) {
+              return true;
+            }
+        
+            if (this.cell.isEmptyHorizontal(target)) {
+              return true;
+            }
+        
+            if (this.cell.isEmptyDiagonal(target)) {
+              return true;
+            }
+            if (!this.cell.board.isCellUnderAttack(target, this.color)) {
+              return false;
+            }
+        
             return false;
-        }
-        return true;
-    }
+          }
+          moveFigure(_target: Cell): void {}
 }

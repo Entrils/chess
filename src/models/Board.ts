@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { Colors } from "./Colors";
 import { Bishop } from "./figures/Bishop";
-import { Figure } from "./figures/Figure";
+import { Figure, FigureNames } from "./figures/Figure";
 import { King } from "./figures/King";
 import { Knight } from "./figures/Knight";
 import { Pawn } from "./figures/Pawn";
@@ -50,7 +50,32 @@ export class Board{
         return newBoard;
     }
 
-
+    public isCellUnderAttack(target: Cell, color: Colors | undefined): boolean {
+        let targetUnderAttack: boolean = false;
+        this.cells.forEach((element) => {
+          element.forEach((cell) => {
+            if (cell.figure?.color !== color) {
+              if (
+                cell.figure?.name === FigureNames.PAWN &&
+                cell.isPawnAttack(target)
+              ) {
+                targetUnderAttack = true;
+              }
+    
+              if (
+                cell.figure?.canMove(target) &&
+                cell.figure?.name !== FigureNames.PAWN
+              ) {
+                targetUnderAttack = true;
+              }
+            }
+          });
+        });
+        if (targetUnderAttack) {
+          return false;
+        }
+        return true;
+      }
 
     private addPawns(){
         for (let i=0;i<8;i++){

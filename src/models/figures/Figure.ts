@@ -19,6 +19,7 @@ export class Figure{
     cell: Cell;
     name: FigureNames;
     id: number;
+    isFirstStep: boolean;
 
     constructor(color: Colors, cell: Cell){
         this.color = color;
@@ -27,6 +28,7 @@ export class Figure{
         this.logo = null;
         this.name = FigureNames.FIGURE;
         this.id = Math.random();
+        this.isFirstStep = true;
     }
 
     canMove(target: Cell): boolean {
@@ -34,7 +36,7 @@ export class Figure{
         if(target.figure?.name === FigureNames.KING) return false
         return true;
     }
-    moveFigure(target: Cell){
-        
-    }
+    moveFigure(_target: Cell) {
+        this.isFirstStep = false;
+      }
 }
