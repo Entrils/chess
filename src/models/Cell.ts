@@ -1,6 +1,8 @@
 import { Colors } from "./Colors";
 import { Board } from "./Board";
-import { Figure } from "./figures/Figure";
+import { Figure, FigureNames } from "./figures/Figure";
+import { Rook } from './figures/Rook';
+import { King } from './figures/King';
 
 export class Cell{
     readonly x: number;
@@ -104,7 +106,7 @@ export class Cell{
         }
         return false;
       }
-      
+
     isPawnAttack(target: Cell): boolean {
         const direction = this.figure?.color === Colors.BLACK ? 1 : -1;
         if (
@@ -114,6 +116,13 @@ export class Cell{
           return true;
         }
         return false;
+      }
+
+      isKnightMove(target: Cell): boolean {
+        const dx = Math.abs(this.x - target.x);
+        const dy = Math.abs(this.y - target.y);
+    
+        return (dx === 1 && dy === 2) || (dx === 2 && dy === 1);
       }
 
     setFigure(figure: Figure){
@@ -127,14 +136,59 @@ export class Cell{
         :  this.board.lostWhiteFigures.push(figure)
     }
 
-    moveFigure(target: Cell){
-        if(this.figure && this.figure?.canMove(target)){
-            this.figure?.moveFigure(target)
-            if(target.figure){
-                this.addLostFigure(target.figure);
-            }
-            target.setFigure(this.figure);
-            this.figure = null;
+    moveFigure(target: Cell) {
+      if (
+        this?.figure?.name === FigureNames.KING &&
+        this?.figure?.color === Colors.BLACK &&
+        target === this.board.cells[0][2]
+      ) {
+        this.board.cells[this.y][this.x].figure = null;
+        this.board.cells[0][4].figure = null;
+        this.board.cells[0][0].figure = null;
+        new King(Colors.BLACK, this.board.cells[0][2]);
+        new Rook(Colors.BLACK, this.board.cells[0][3]);
+      }
+      if (
+        this?.figure?.name === FigureNames.KING &&
+        this?.figure?.color === Colors.BLACK &&
+        target === this.board.cells[0][6]
+      ) {
+        this.board.cells[this.y][this.x].figure = null;
+        this.board.cells[0][4].figure = null;
+        this.board.cells[0][7].figure = null;
+        new King(Colors.BLACK, this.board.cells[0][6]);
+        new Rook(Colors.BLACK, this.board.cells[0][5]);
+      }
+      if (
+        this?.figure?.name === FigureNames.KING &&
+        this?.figure?.color === Colors.WHITE &&
+        target === this.board.cells[7][6]
+      ) {
+        this.board.cells[this.y][this.x].figure = null;
+        this.board.cells[7][4].figure = null;
+        this.board.cells[7][7].figure = null;
+        new King(Colors.WHITE, this.board.cells[7][6]);
+        new Rook(Colors.WHITE, this.board.cells[7][5]);
+      }
+      if (
+        this?.figure?.name === FigureNames.KING &&
+        this?.figure?.color === Colors.WHITE &&
+        target === this.board.cells[7][2]
+      ) {
+        this.board.cells[this.y][this.x].figure = null;
+        this.board.cells[7][4].figure = null;
+        this.board.cells[7][0].figure = null;
+        new King(Colors.WHITE, this.board.cells[7][2]);
+        new Rook(Colors.WHITE, this.board.cells[7][3]);
+      } else {
+        if (this.figure && this.figure?.canMove(target)) {
+          this.figure.moveFigure(target);
+          if (target.figure) {
+            this.addLostFigure(target.figure);
+          }
+          target.setFigure(this.figure);
+          this.figure = null;
         }
+      }
     }
 }

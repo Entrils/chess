@@ -50,6 +50,21 @@ export class Board{
         return newBoard;
     }
 
+    public findKings() {
+        let blackKing: Cell = new Cell(this, 0, 0, Colors.BLACK, null);
+        let whiteKing: Cell = new Cell(this, 0, 0, Colors.WHITE, null);
+        this.cells.forEach((element) => {
+          element.forEach((cell) => {
+            if (cell.figure?.name === FigureNames.KING) {
+              cell.figure.color === Colors.WHITE
+                ? (whiteKing = cell)
+                : (blackKing = cell);
+            }
+          });
+        });
+        return { whiteKing, blackKing };
+      }
+
     public isCellUnderAttack(target: Cell, color: Colors | undefined): boolean {
         let targetUnderAttack: boolean = false;
         this.cells.forEach((element) => {
@@ -75,6 +90,22 @@ export class Board{
           return false;
         }
         return true;
+      }
+
+      public isKingUnderAttack() {
+        let WhiteCheckFigures: Cell | null = null;
+        let BlackCheckFigures: Cell | null = null;
+        this.cells.forEach((element) => {
+          element.forEach((cell) => {
+            if (cell.figure?.canMove(this.findKings().whiteKing)) {
+              WhiteCheckFigures = cell;
+            }
+            if (cell.figure?.canMove(this.findKings().blackKing)) {
+              BlackCheckFigures = cell;
+            }
+          });
+        });
+        return { WhiteCheckFigures, BlackCheckFigures };
       }
 
     private addPawns(){
