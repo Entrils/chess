@@ -10,8 +10,8 @@ interface TimerProps{
 }
 
 export const Timer: FC<TimerProps> = ({currentPlayer, restart}) => {
-  const [blackTime, setBlackTime] = useState(300)
-  const [whiteTime, setWhiteTime] = useState(300)
+  const [blackTime, setBlackTime] = useState(100)
+  const [whiteTime, setWhiteTime] = useState(100)
   const timer = useRef<null | ReturnType<typeof setInterval>>(null)
 
   useEffect(()=>{
@@ -38,13 +38,13 @@ export const Timer: FC<TimerProps> = ({currentPlayer, restart}) => {
   }
 
   const handleRestart = () => {
-    setBlackTime(300)
-    setWhiteTime(300)
+    setBlackTime(100)
+    setWhiteTime(100)
     restart()
   }
   return (
     <div>
-      {whiteTime && blackTime ? (
+      {whiteTime>=0 && blackTime>=0 ? (
     <div className='timer'>
       <div>
         <button onClick={handleRestart}>Restart game</button>
@@ -60,10 +60,10 @@ export const Timer: FC<TimerProps> = ({currentPlayer, restart}) => {
         keyboard={false}
       >
         <Modal.Header>
-          <Modal.Title>Modal title</Modal.Title>
+          <Modal.Title>Время вышло!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Время вышло! {whiteTime ? "White" : "Black"} выиграли! Поздравляем!
+          {whiteTime>0 ? "White" : "Black"} выиграли! Поздравляем!
           Еще одну игру?
         </Modal.Body>
         <Modal.Footer>

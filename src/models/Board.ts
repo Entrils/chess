@@ -92,6 +92,70 @@ export class Board{
         return true;
       }
 
+      public castling(target: Cell, color: Colors | undefined): boolean {
+        if (
+          color === Colors.BLACK &&
+          target.x === 2 &&
+          target.y === 0 &&
+          this.cells[0][0].figure?.isFirstStep &&
+          this.cells[0][4].figure?.isFirstStep &&
+          !this.cells[0][1].figure &&
+          !this.cells[0][2].figure &&
+          !this.cells[0][3].figure &&
+          this.isCellUnderAttack(this.getCell(2, 0), Colors.BLACK) &&
+          this.isCellUnderAttack(this.getCell(3, 0), Colors.BLACK) &&
+          this.isCellUnderAttack(this.getCell(4, 0), Colors.BLACK)
+        ) {
+          return true;
+        }
+        if (
+          color === Colors.BLACK &&
+          target.x === 6 &&
+          target.y === 0 &&
+          this.cells[0][7].figure?.isFirstStep &&
+          this.cells[0][4].figure?.isFirstStep &&
+          !this.cells[0][5].figure &&
+          !this.cells[0][6].figure &&
+          this.isCellUnderAttack(this.getCell(4, 0), Colors.BLACK) &&
+          this.isCellUnderAttack(this.getCell(5, 0), Colors.BLACK) &&
+          this.isCellUnderAttack(this.getCell(6, 0), Colors.BLACK)
+        ) {
+          return true;
+        }
+        if (
+          color === Colors.WHITE &&
+          target.x === 2 &&
+          target.y === 7 &&
+          this.cells[7][0].figure?.isFirstStep &&
+          this.cells[7][4].figure?.isFirstStep &&
+          !this.cells[7][1].figure &&
+          !this.cells[7][2].figure &&
+          !this.cells[7][3].figure &&
+          this.isCellUnderAttack(this.getCell(2, 7), Colors.WHITE) &&
+          this.isCellUnderAttack(this.getCell(3, 7), Colors.WHITE) &&
+          this.isCellUnderAttack(this.getCell(3, 7), Colors.WHITE)
+        ) {
+          return true;
+        }
+        if (
+          color === Colors.WHITE &&
+          target.x === 6 &&
+          target.y === 7 &&
+          this.cells[7][7].figure?.isFirstStep &&
+          this.cells[7][4].figure?.isFirstStep &&
+          !this.cells[7][5].figure &&
+          !this.cells[7][6].figure &&
+          this.isCellUnderAttack(this.getCell(6, 7), Colors.WHITE) &&
+          this.isCellUnderAttack(this.getCell(5, 7), Colors.WHITE) &&
+          this.isCellUnderAttack(this.getCell(4, 7), Colors.WHITE)
+        ) {
+          return true;
+        }
+        return false;
+      }
+
+      /* Большой блок управления шахами и матами */
+
       public isKingUnderAttack() {
         let WhiteCheckFigures: Cell | null = null;
         let BlackCheckFigures: Cell | null = null;
@@ -106,6 +170,81 @@ export class Board{
           });
         });
         return { WhiteCheckFigures, BlackCheckFigures };
+      }
+
+      public checkList() {
+        const checkList = this.isKingUnderAttack();
+    
+        if (checkList.WhiteCheckFigures) {
+          const king: Cell = this.findKings().whiteKing;
+          const target: Cell = checkList.WhiteCheckFigures;
+          return {
+            king: king,
+            attacker: target,
+          };
+        }
+    
+        if (checkList.BlackCheckFigures) {
+          const king: Cell = this.findKings().blackKing;
+          const target: Cell = checkList.BlackCheckFigures;
+          return {
+            king: king,
+            attacker: target,
+          };
+        }
+      }
+
+      private checkMoves(target: Cell): boolean {
+        const checkList = this.checkList();
+        if (target === checkList?.attacker) {
+          return true;
+        }
+        if (target === checkList?.attacker) {
+          return false;
+        }
+        if (checkList?.attacker.figure?.name === FigureNames.QUEEN) {
+          if (checkList.attacker.isEmptyVertical(checkList.king)) {
+            return (
+              checkList.attacker.isEmptyVertical(target) &&
+              checkList.king.isEmptyVertical(target)
+            );
+          }
+          if (checkList.attacker.isEmptyDiagonal(checkList.king)) {
+            return (
+              checkList.attacker.isEmptyDiagonal(target) &&
+              checkList.king.isEmptyDiagonal(target)
+            );
+          }
+          if (checkList.attacker.isEmptyHorizontal(checkList.king)) {
+            return (
+              checkList.attacker.isEmptyHorizontal(target) &&
+              checkList.king.isEmptyHorizontal(target)
+            );
+          }
+        }
+        if (checkList?.attacker.figure?.name === FigureNames.BISHOP) {
+          if (checkList.attacker.isEmptyDiagonal(checkList.king)) {
+            return (
+              checkList.attacker.isEmptyDiagonal(target) &&
+              checkList.king.isEmptyDiagonal(target)
+            );
+          }
+        }
+        if (checkList?.attacker.figure?.name === FigureNames.ROOK) {
+          if (checkList.attacker.isEmptyVertical(checkList.king)) {
+            return (
+              checkList.attacker.isEmptyVertical(target) &&
+              checkList.king.isEmptyVertical(target)
+            );
+          }
+          if (checkList.attacker.isEmptyHorizontal(checkList.king)) {
+            return (
+              checkList.attacker.isEmptyHorizontal(target) &&
+              checkList.king.isEmptyHorizontal(target)
+            );
+          }
+        }
+        return false;
       }
 
     private addPawns(){

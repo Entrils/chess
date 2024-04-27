@@ -18,7 +18,7 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, switchP
 
     function click(cell: Cell){
         if(selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)){
-            selectedCell.moveFigure(cell);
+            selectedCell?.moveFigure(cell);
             switchPlayer()
             setSelectedCell(null);
         } else{
