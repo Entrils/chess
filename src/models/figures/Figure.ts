@@ -32,10 +32,19 @@ export class Figure{
     }
 
     canMove(target: Cell): boolean {
-        if(target.figure?.color === this.color) return false
-        if(target.figure?.name === FigureNames.KING) return false
+        if (target.figure?.color === this.color) {
+          return false;
+        }
+        if (
+          (target.board.whiteCheck || target.board.blackCheck) &&
+          target.available === false
+        ) {
+          return false;
+        }
         return true;
-    }
+      }
+
+      
     moveFigure(_target: Cell) {
         this.isFirstStep = false;
       }

@@ -19,11 +19,12 @@ function App() {
     setCurrentPlayer(whitePlayer)
   },[])
 
-  function restart(){
+  function restart() {
     const newBoard = new Board();
-    newBoard.initCells()
-    newBoard.addFigures()
-    setBoard(newBoard)
+    newBoard.initCells();
+    newBoard.addFigures();
+    setBoard(newBoard);
+    setCurrentPlayer(whitePlayer);
   }
 
   function switchPlayer(){
@@ -37,6 +38,7 @@ function App() {
       restart={restart}
       currentPlayer={currentPlayer}/>
       <BoardComponent 
+      restart={restart}
       board = {board}
       setBoard={setBoard}
       currentPlayer={currentPlayer}

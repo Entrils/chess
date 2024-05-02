@@ -5,13 +5,14 @@ import { Cell } from '../models/Cell';
 import { Player } from '../models/Player';
 
 interface BoardProps {
+    restart: () => void;
     board: Board;
     setBoard: (board: Board) => void;
     currentPlayer: Player | null;
     switchPlayer: () => void;
 }
 
-const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, switchPlayer}) => {
+const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, switchPlayer, restart}) => {
 
     const [selectedCell, setSelectedCell]= useState<Cell | null>(null);
 
@@ -33,7 +34,7 @@ const BoardComponent: FC<BoardProps> = ({board, setBoard, currentPlayer, switchP
     },[selectedCell])
 
     function highlightCells() {
-        board.highlightCells(selectedCell)
+        board.highlightCells(selectedCell, currentPlayer?.color);
         updateBoard()
     }
 
