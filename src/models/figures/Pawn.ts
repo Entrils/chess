@@ -22,7 +22,23 @@ export class Pawn extends Figure{
 
         if (this.cell.isPawnMove(target, this.isFirstStep)) {
             return true;
-          }
-          return false;
+        }
+
+        const direction = this.color === Colors.BLACK ? 1 : -1;
+        const enPassantPawn = this.cell.board.enPassantPawn;
+        if (
+          enPassantPawn &&
+          enPassantPawn !== this &&
+          enPassantPawn.color !== this.color &&
+          enPassantPawn.cell.y === this.cell.y &&
+          Math.abs(enPassantPawn.cell.x - this.cell.x) === 1 &&
+          target.x === enPassantPawn.cell.x &&
+          target.y === this.cell.y + direction &&
+          target.isEmpty()
+        ) {
+          return true;
+        }
+
+        return false;
 }
 }

@@ -16,7 +16,7 @@ export const CellComponent: FC<CellProps>= ({cell, selected, click}) => {
     {/*пока инлайн стиль */}
 
       {cell.available && !cell.figure && <div  className={'available'}/>}
-        {cell.figure?.logo && <img src={cell.figure.logo}></img>}
+      {cell.figure?.logo && <img src={cell.figure.logo} alt={cell.figure.name} />}
         
         </div>
   )

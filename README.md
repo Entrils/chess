@@ -1,46 +1,70 @@
-# Getting Started with Create React App
+﻿# Chess (React + TypeScript)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Веб-приложение для игры в шахматы на одном ПК.
 
-## Available Scripts
+## Что реализовано
 
-In the project directory, you can run:
+- Полноценная доска 8x8 и базовые правила ходов фигур.
+- Рокировка.
+- Взятие пешки на проходе.
+- Превращение пешки через модальное окно.
+- Проверка состояний: мат, пат, окончание по времени, сдача.
+- Контроль времени с выбором перед стартом:
+  - 1 мин
+  - 3 мин
+  - 5 мин
+  - 10 мин
+  - 15 мин
+  - 30 мин
+- Таймер в формате `мм:сс`.
+- Пауза игры:
+  - кнопка паузы/продолжения,
+- Кнопки сдачи для обеих сторон.
 
-### `npm start`
+## Технологии
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React 18
+- TypeScript
+- React Bootstrap
+- CSS
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Запуск проекта
 
-### `npm test`
+1. Установить зависимости:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install
+```
 
-### `npm run build`
+2. Запустить в режиме разработки:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm start
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Открыть в браузере:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+`http://localhost:3000`
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Управление в игре
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- `Перезапустить игру`:
+  - открывает модальное окно выбора времени и запускает новую партию.
+- Кнопка паузы:
+  - ставит игру на паузу;
+  - повторное нажатие продолжает игру.
+- `Сдаться`:
+  - есть отдельная кнопка для каждой стороны;
+  - активна только у текущего игрока.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Структура
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- `src/models` - шахматная логика (доска, клетки, фигуры, правила).
+- `src/components` - UI-компоненты (доска, клетки, таймер, списки побитых фигур).
+- `src/App.tsx` - композиция экранов, модальные окна и основной стейт игры.
 
-## Learn More
+## Ограничения
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Игра полностью локальная, без сервера и мультиплеера.
+- Состояние не сохраняется между перезапусками страницы.

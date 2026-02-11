@@ -35,12 +35,6 @@ export class Figure{
         if (target.figure?.color === this.color) {
           return false;
         }
-        if (
-          (target.board.whiteCheck || target.board.blackCheck) &&
-          target.available === false
-        ) {
-          return false;
-        }
         return true;
       }
 

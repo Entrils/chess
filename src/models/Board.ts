@@ -18,6 +18,7 @@ export class Board{
     checkmate: boolean = false;
     stalemate: boolean = false;
     promotePawnCell: Cell | null = null;
+    enPassantPawn: Pawn | null = null;
 
     public initCells(){
         for (let i=0;i<8;i++){
@@ -53,6 +54,13 @@ export class Board{
               if (this.isCellUnderAttack(target, color)) {
                 const copyCells: Board = lodash.cloneDeep(this);
                 copyCells.cells[selectedCell.y][selectedCell.x].figure = null;
+                if (
+                  selectedCell.figure?.name === FigureNames.PAWN &&
+                  !copyCells.cells[target.y][target.x].figure &&
+                  selectedCell.x !== target.x
+                ) {
+                  copyCells.cells[selectedCell.y][target.x].figure = null;
+                }
                 copyCells.cells[target.y][target.x].figure = selectedCell.figure;
                 (copyCells.isKingUnderAttack().BlackCheckFigures &&
                   selectedCell.figure?.color === Colors.BLACK) ||
@@ -99,6 +107,13 @@ export class Board{
           ) {
             const copyCells: Board = lodash.cloneDeep(this);
             copyCells.cells[selectedCell.y][selectedCell.x].figure = null;
+            if (
+              selectedCell.figure?.name === FigureNames.PAWN &&
+              !copyCells.cells[target.y][target.x].figure &&
+              selectedCell.x !== target.x
+            ) {
+              copyCells.cells[selectedCell.y][target.x].figure = null;
+            }
             copyCells.cells[target.y][target.x].figure = selectedCell.figure;
             (copyCells.isKingUnderAttack().BlackCheckFigures &&
               selectedCell.figure?.color === Colors.BLACK) ||
@@ -121,6 +136,7 @@ export class Board{
       newBoard.checkmate = this.checkmate;
       newBoard.stalemate = this.stalemate;
       newBoard.promotePawnCell = this.promotePawnCell;
+      newBoard.enPassantPawn = this.enPassantPawn;
       return newBoard;
     }
 
@@ -207,7 +223,7 @@ export class Board{
           !this.cells[7][3].figure &&
           this.isCellUnderAttack(this.getCell(2, 7), Colors.WHITE) &&
           this.isCellUnderAttack(this.getCell(3, 7), Colors.WHITE) &&
-          this.isCellUnderAttack(this.getCell(3, 7), Colors.WHITE)
+          this.isCellUnderAttack(this.getCell(4, 7), Colors.WHITE)
         ) {
           return true;
         }
@@ -273,9 +289,6 @@ export class Board{
         if (target === checkList?.attacker) {
           return true;
         }
-        if (target === checkList?.attacker) {
-          return false;
-        }
         if (checkList?.attacker.figure?.name === FigureNames.QUEEN) {
           if (checkList.attacker.isEmptyVertical(checkList.king)) {
             return (
@@ -321,74 +334,52 @@ export class Board{
         return false;
       }
       public isCheckmate(color: Colors | undefined) {
-        if (this.isKingUnderAttack().BlackCheckFigures && this.blackCheck) {
-          this.checkmate = true;
+        const sideToMove =
+          color === Colors.BLACK ? Colors.WHITE : color === Colors.WHITE ? Colors.BLACK : undefined;
+
+        if (!sideToMove) {
+          return;
         }
-        if (!this.isKingUnderAttack().BlackCheckFigures && this.blackCheck) {
-          this.blackCheck = false;
-        }
-        if (this.isKingUnderAttack().BlackCheckFigures && !this.blackCheck) {
-          this.blackCheck = true;
-        }
-        if (this.isKingUnderAttack().WhiteCheckFigures && this.whiteCheck) {
-          this.checkmate = true;
-        }
-        if (!this.isKingUnderAttack().WhiteCheckFigures && this.whiteCheck) {
-          this.whiteCheck = false;
-        }
-        if (this.isKingUnderAttack().WhiteCheckFigures && !this.whiteCheck) {
-          this.whiteCheck = true;
-        }
-        if (this.whiteCheck || this.blackCheck) {
-          const oppositeColor =
-            color === Colors.BLACK ? Colors.WHITE : Colors.BLACK;
-          let checkmate: boolean = true;
-          const copyCells: Board = lodash.cloneDeep(this);
-    
-          copyCells.cells.forEach((element) => {
-            element.forEach((cell) => {
-              if (cell.figure && cell.figure?.color === oppositeColor) {
-                copyCells.highlightCells(cell, oppositeColor);
-                for (let i = 0; i < copyCells.cells.length; i++) {
-                  const row = copyCells.cells[i];
-                  for (let j = 0; j < row.length; j++) {
-                    if (row[j].available === true) {
-                      checkmate = false;
-                    }
-                  }
+
+        this.checkmate = false;
+        this.stalemate = false;
+
+        const checks = this.isKingUnderAttack();
+        this.whiteCheck = !!checks.WhiteCheckFigures;
+        this.blackCheck = !!checks.BlackCheckFigures;
+
+        let hasLegalMove = false;
+        const copyCells: Board = lodash.cloneDeep(this);
+
+        copyCells.cells.forEach((element) => {
+          element.forEach((cell) => {
+            if (hasLegalMove || !cell.figure || cell.figure.color !== sideToMove) {
+              return;
+            }
+
+            copyCells.highlightCells(cell, sideToMove);
+            for (let i = 0; i < copyCells.cells.length; i++) {
+              for (let j = 0; j < copyCells.cells[i].length; j++) {
+                if (copyCells.cells[i][j].available) {
+                  hasLegalMove = true;
+                  return;
                 }
               }
-            });
+            }
           });
-          if (checkmate) {
-            this.checkmate = true;
-          }
+        });
+
+        if (hasLegalMove) {
+          return;
         }
-        if (!this.whiteCheck && !this.blackCheck) {
-          const oppositeColor =
-            color === Colors.BLACK ? Colors.WHITE : Colors.BLACK;
-          let stalemate: boolean = true;
-          const copyCells: Board = lodash.cloneDeep(this);
-    
-          copyCells.cells.forEach((element) => {
-            element.forEach((cell) => {
-              if (cell.figure && cell.figure?.color === oppositeColor) {
-                copyCells.highlightCells(cell, oppositeColor);
-                for (let i = 0; i < copyCells.cells.length; i++) {
-                  const row = copyCells.cells[i];
-                  for (let j = 0; j < row.length; j++) {
-                    if (row[j].available === true) {
-                      console.log(row[j]);
-                      stalemate = false;
-                    }
-                  }
-                }
-              }
-            });
-          });
-          if (stalemate) {
-            this.stalemate = true;
-          }
+
+        const sideToMoveInCheck =
+          sideToMove === Colors.WHITE ? this.whiteCheck : this.blackCheck;
+
+        if (sideToMoveInCheck) {
+          this.checkmate = true;
+        } else {
+          this.stalemate = true;
         }
       }
 

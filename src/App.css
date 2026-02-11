@@ -9,7 +9,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(90deg, rgb(46, 51, 46) 10%, rgb(10, 26, 1) 100%);
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.08), transparent 35%),
+      radial-gradient(circle at 80% 85%, rgba(255, 255, 255, 0.07), transparent 30%),
+      linear-gradient(135deg, #2b241b 0%, #3a2f23 45%, #1f1913 100%);
+    position: relative;
 }
 
 .board{
@@ -17,6 +21,27 @@
     height: calc(64px*8);
     display: flex;
     flex-wrap: wrap;
+}
+
+.board-wrap{
+    position: relative;
+    width: calc(64px*8);
+    height: calc(64px*8);
+}
+
+.board-pause-overlay{
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.58);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f2eadf;
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    z-index: 5;
+    pointer-events: none;
 }
 
 .cell{
@@ -69,6 +94,13 @@
     margin-right: 15px;
 }
 
+.timer-controls{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
 .timer button{
     text-decoration: none;
     border: 1px solid rgb(146, 248, 146);
@@ -106,3 +138,166 @@
   .timer button:hover:before {
     left: 100%;
   }
+
+.game-over-backdrop {
+  background: rgba(4, 10, 16, 0.82);
+  backdrop-filter: blur(2px);
+  opacity: 1 !important;
+  pointer-events: all;
+}
+
+.timer .pause-button{
+    width: 42px;
+    height: 37px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer .pause-button svg{
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.resign-button{
+    margin-top: 8px;
+    width: 100%;
+}
+
+.resign-button:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.game-over-modal .modal-dialog {
+  max-width: 460px;
+}
+
+.game-over-modal-content {
+  background:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.04) 75%),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.04) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.04) 75%),
+    #e7dcc8;
+  background-size: 28px 28px, 28px 28px, auto;
+  background-position: 0 0, 14px 14px, 0 0;
+  border: 3px solid #1d1a16;
+  border-radius: 0;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+  color: #1d1a16;
+  overflow: hidden;
+  font-family: "Georgia", "Times New Roman", serif;
+}
+
+.game-over-modal-header {
+  border-bottom: 2px solid #1d1a16;
+  background: #b28a5a;
+  padding: 16px 20px 12px;
+  border-radius: 0;
+}
+
+.game-over-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #111;
+}
+
+.game-over-modal-body {
+  padding: 20px;
+  font-size: 1.08rem;
+  color: #1d1a16;
+  line-height: 1.5;
+  border-radius: 0;
+}
+
+.game-over-modal-footer {
+  border-top: 2px solid #1d1a16;
+  padding: 14px 20px 18px;
+  background: #d6c3a3;
+  border-radius: 0;
+}
+
+.promotion-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.promotion-gallery {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+}
+
+.promotion-image-button {
+  border: 2px solid #1d1a16;
+  background: #d6c3a3;
+  border-radius: 0;
+  padding: 4px;
+  width: 72px;
+  height: 72px;
+  cursor: pointer;
+}
+
+.promotion-image-button img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.promotion-image-button:hover,
+.promotion-image-button:focus {
+  background: #b28a5a;
+}
+
+.time-control-body{
+  padding: 18px;
+}
+
+.time-control-options{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.time-option-button{
+  border: 2px solid #1d1a16;
+  background: #d6c3a3;
+  color: #1d1a16;
+  font-weight: 700;
+  border-radius: 0;
+  padding: 10px 6px;
+  cursor: pointer;
+}
+
+.time-option-button-active{
+  background: #1d1a16;
+  color: #f3eadc;
+}
+
+.game-over-modal-button {
+  border: 2px solid #1d1a16;
+  border-radius: 0;
+  padding: 10px 20px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: #1d1a16;
+  color: #f3eadc;
+  box-shadow: 3px 3px 0 #7f5d36;
+}
+
+.game-over-modal-button:hover,
+.game-over-modal-button:focus,
+.game-over-modal-button:active {
+  color: #f3eadc;
+  background: #000;
+  transform: none;
+  box-shadow: 2px 2px 0 #7f5d36;
+}

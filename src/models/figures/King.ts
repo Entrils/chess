@@ -39,5 +39,7 @@ export class King extends Figure{
         
             return false;
           }
-          moveFigure(_target: Cell): void {}
+          moveFigure(target: Cell): void {
+            super.moveFigure(target);
+          }
 }

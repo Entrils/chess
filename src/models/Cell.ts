@@ -1,8 +1,7 @@
 import { Colors } from "./Colors";
 import { Board } from "./Board";
 import { Figure, FigureNames } from "./figures/Figure";
-import { Rook } from './figures/Rook';
-import { King } from './figures/King';
+import { Pawn } from "./figures/Pawn";
 
 export class Cell{
     readonly x: number;
@@ -137,58 +136,73 @@ export class Cell{
     }
 
     moveFigure(target: Cell) {
-      if (
-        this?.figure?.name === FigureNames.KING &&
-        this?.figure?.color === Colors.BLACK &&
-        target === this.board.cells[0][2]
-      ) {
-        this.board.cells[this.y][this.x].figure = null;
-        this.board.cells[0][4].figure = null;
-        this.board.cells[0][0].figure = null;
-        new King(Colors.BLACK, this.board.cells[0][2]);
-        new Rook(Colors.BLACK, this.board.cells[0][3]);
+      if (!this.figure) {
+        return;
       }
-      if (
-        this?.figure?.name === FigureNames.KING &&
-        this?.figure?.color === Colors.BLACK &&
-        target === this.board.cells[0][6]
-      ) {
-        this.board.cells[this.y][this.x].figure = null;
-        this.board.cells[0][4].figure = null;
-        this.board.cells[0][7].figure = null;
-        new King(Colors.BLACK, this.board.cells[0][6]);
-        new Rook(Colors.BLACK, this.board.cells[0][5]);
-      }
-      if (
-        this?.figure?.name === FigureNames.KING &&
-        this?.figure?.color === Colors.WHITE &&
-        target === this.board.cells[7][6]
-      ) {
-        this.board.cells[this.y][this.x].figure = null;
-        this.board.cells[7][4].figure = null;
-        this.board.cells[7][7].figure = null;
-        new King(Colors.WHITE, this.board.cells[7][6]);
-        new Rook(Colors.WHITE, this.board.cells[7][5]);
-      }
-      if (
-        this?.figure?.name === FigureNames.KING &&
-        this?.figure?.color === Colors.WHITE &&
-        target === this.board.cells[7][2]
-      ) {
-        this.board.cells[this.y][this.x].figure = null;
-        this.board.cells[7][4].figure = null;
-        this.board.cells[7][0].figure = null;
-        new King(Colors.WHITE, this.board.cells[7][2]);
-        new Rook(Colors.WHITE, this.board.cells[7][3]);
-      } else {
-        if (this.figure && this.figure?.canMove(target)) {
-          this.figure.moveFigure(target);
-          if (target.figure) {
-            this.addLostFigure(target.figure);
-          }
-          target.setFigure(this.figure);
-          this.figure = null;
+
+      const movingFigure = this.figure;
+      const startY = this.y;
+
+      const isCastling =
+        this.figure.name === FigureNames.KING &&
+        this.y === target.y &&
+        Math.abs(target.x - this.x) === 2;
+
+      if (isCastling) {
+        const rookFromX = target.x === 2 ? 0 : 7;
+        const rookToX = target.x === 2 ? 3 : 5;
+        const rookFromCell = this.board.getCell(rookFromX, this.y);
+        const rookToCell = this.board.getCell(rookToX, this.y);
+        const rook = rookFromCell.figure;
+        const king = this.figure;
+
+        if (!rook || rook.name !== FigureNames.ROOK) {
+          return;
         }
+
+        king.moveFigure(target);
+        rook.moveFigure(rookToCell);
+
+        target.setFigure(king);
+        this.figure = null;
+        rookToCell.setFigure(rook);
+        rookFromCell.figure = null;
+        this.board.enPassantPawn = null;
+        return;
       }
+
+      if (!this.figure.canMove(target)) {
+        return;
+      }
+
+      let enPassantCapturedPawn: Figure | null = null;
+      if (
+        movingFigure.name === FigureNames.PAWN &&
+        target.isEmpty() &&
+        this.x !== target.x
+      ) {
+        const capturedPawnCell = this.board.getCell(target.x, this.y);
+        enPassantCapturedPawn = capturedPawnCell.figure;
+        capturedPawnCell.figure = null;
+      }
+
+      this.figure.moveFigure(target);
+      if (target.figure) {
+        this.addLostFigure(target.figure);
+      }
+      if (enPassantCapturedPawn) {
+        this.addLostFigure(enPassantCapturedPawn);
+      }
+      target.setFigure(this.figure);
+      this.figure = null;
+
+      this.board.enPassantPawn = null;
+      if (
+        movingFigure instanceof Pawn &&
+        Math.abs(target.y - startY) === 2
+      ) {
+        this.board.enPassantPawn = movingFigure;
+      }
+
     }
 }
